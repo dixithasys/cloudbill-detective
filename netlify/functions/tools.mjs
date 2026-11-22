@@ -126,19 +126,25 @@ function getCredsFromReq(req, bodyObj = {}) {
     req.headers.get("x-aws-access-key-id") ||
     (typeof Netlify !== "undefined" && Netlify.env.get("AWS_ACCESS_KEY_ID")) ||
     ""
-  ).trim();
+  ).trim().replace(/^["']|["']$/g, "");
   const secretAccessKey = (
     bodyObj.aws_secret_access_key ||
     req.headers.get("x-aws-secret-access-key") ||
     (typeof Netlify !== "undefined" && Netlify.env.get("AWS_SECRET_ACCESS_KEY")) ||
     ""
-  ).trim();
-  const sessionToken = (
+  ).trim().replace(/^["']|["']$/g, "");
+  let sessionToken = (
     bodyObj.aws_session_token ||
     req.headers.get("x-aws-session-token") ||
     (typeof Netlify !== "undefined" && Netlify.env.get("AWS_SESSION_TOKEN")) ||
     ""
-  ).trim();
+  ).trim().replace(/^["']|["']$/g, "");
+
+  // Permanent IAM User keys start with AKIA and must NEVER send X-Amz-Security-Token
+  if (accessKeyId.toUpperCase().startsWith("AKIA")) {
+    sessionToken = "";
+  }
+
   const mode = (
     bodyObj.mode ||
     req.headers.get("x-aws-mode") ||

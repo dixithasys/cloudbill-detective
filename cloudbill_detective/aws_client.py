@@ -94,11 +94,15 @@ def set_runtime_aws_config(
 def _create_boto3_session(region_name: str = "us-east-1") -> boto3.Session:
     """Create a boto3 Session using in-memory credentials if provided, else default AWS credential chain."""
     kwargs: dict[str, Any] = {"region_name": region_name}
-    if _RUNTIME_AWS_CONFIG.get("aws_access_key_id") and _RUNTIME_AWS_CONFIG.get("aws_secret_access_key"):
-        kwargs["aws_access_key_id"] = _RUNTIME_AWS_CONFIG["aws_access_key_id"]
-        kwargs["aws_secret_access_key"] = _RUNTIME_AWS_CONFIG["aws_secret_access_key"]
-        if _RUNTIME_AWS_CONFIG.get("aws_session_token"):
-            kwargs["aws_session_token"] = _RUNTIME_AWS_CONFIG["aws_session_token"]
+    ak = (_RUNTIME_AWS_CONFIG.get("aws_access_key_id") or "").strip()
+    sk = (_RUNTIME_AWS_CONFIG.get("aws_secret_access_key") or "").strip()
+    st = (_RUNTIME_AWS_CONFIG.get("aws_session_token") or "").strip()
+    if ak and sk:
+        kwargs["aws_access_key_id"] = ak
+        kwargs["aws_secret_access_key"] = sk
+        # Permanent IAM user keys (AKIA...) never use a session token
+        if st and not ak.upper().startswith("AKIA"):
+            kwargs["aws_session_token"] = st
     elif _RUNTIME_AWS_CONFIG.get("aws_profile"):
         kwargs["profile_name"] = _RUNTIME_AWS_CONFIG["aws_profile"]
     return boto3.Session(**kwargs)

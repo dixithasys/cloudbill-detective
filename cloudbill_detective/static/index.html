@@ -661,8 +661,8 @@
           <input type="password" id="awsSecretKey" autocomplete="new-password" placeholder="Secret Access Key" />
         </div>
         <div class="form-field">
-          <label>AWS Session Token (Optional)</label>
-          <input type="password" id="awsSessionToken" autocomplete="new-password" placeholder="Only for temporary CloudShell / STS credentials" />
+          <label>AWS Session Token (Leave blank for AKIA... IAM user keys)</label>
+          <input type="text" id="awsSessionToken" autocomplete="off" placeholder="Leave blank unless using temporary ASIA... STS keys" />
         </div>
         <div class="form-field">
           <label>Local Profile Name (Optional)</label>
@@ -896,7 +896,11 @@
       const region = document.getElementById('regionSelect').value;
       const accessKeyId = document.getElementById('awsAccessKey').value.trim();
       const secretAccessKey = document.getElementById('awsSecretKey').value.trim();
-      const sessionToken = document.getElementById('awsSessionToken').value.trim();
+      const rawToken = document.getElementById('awsSessionToken').value.trim();
+      const sessionToken = accessKeyId.toUpperCase().startsWith('AKIA') ? '' : rawToken;
+      if (accessKeyId.toUpperCase().startsWith('AKIA')) {
+        document.getElementById('awsSessionToken').value = '';
+      }
 
       setStoredSession({
         mode: 'live',
