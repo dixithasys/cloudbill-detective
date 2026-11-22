@@ -742,9 +742,31 @@
       }
     };
 
-    async function apiFetch(url, options = {}) {
+    const SESSION_KEY = 'cloudbill_aws_session';
+
+    function getStoredSession() {
       try {
-        const res = await fetch(url, options);
+        return JSON.parse(sessionStorage.getItem(SESSION_KEY) || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function setStoredSession(data) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
+    }
+
+    async function apiFetch(url, options = {}) {
+      const sess = getStoredSession();
+      const headers = { ...(options.headers || {}) };
+      if (sess.mode) headers['x-aws-mode'] = sess.mode;
+      if (sess.accessKeyId) headers['x-aws-access-key-id'] = sess.accessKeyId;
+      if (sess.secretAccessKey) headers['x-aws-secret-access-key'] = sess.secretAccessKey;
+      if (sess.sessionToken) headers['x-aws-session-token'] = sess.sessionToken;
+      if (sess.region) headers['x-aws-region'] = sess.region;
+
+      try {
+        const res = await fetch(url, { ...options, headers });
         const contentType = res.headers.get('content-type') || '';
         if (res.ok && contentType.includes('application/json')) {
           return await res.json();
@@ -870,10 +892,21 @@
     async function saveLiveAws() {
       const fb = document.getElementById('modalFeedback');
       fb.style.color = 'var(--accent)';
-      fb.textContent = 'Saving settings...';
+      fb.textContent = 'Verifying AWS credentials...';
       const region = document.getElementById('regionSelect').value;
+      const accessKeyId = document.getElementById('awsAccessKey').value.trim();
+      const secretAccessKey = document.getElementById('awsSecretKey').value.trim();
+      const sessionToken = document.getElementById('awsSessionToken').value.trim();
 
-      await fetch('/tools/llm_config', {
+      setStoredSession({
+        mode: 'live',
+        accessKeyId,
+        secretAccessKey,
+        sessionToken,
+        region
+      });
+
+      await apiFetch('/tools/llm_config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -882,19 +915,18 @@
         })
       });
 
-      const res = await fetch('/tools/aws_config', {
+      const st = await apiFetch('/tools/aws_config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mode: 'live',
-          aws_access_key_id: document.getElementById('awsAccessKey').value,
-          aws_secret_access_key: document.getElementById('awsSecretKey').value,
-          aws_session_token: document.getElementById('awsSessionToken').value,
+          aws_access_key_id: accessKeyId,
+          aws_secret_access_key: secretAccessKey,
+          aws_session_token: sessionToken,
           aws_profile: document.getElementById('awsProfile').value,
           region
         })
       });
-      const st = await res.json();
       await refreshStatus();
       if (st.connected) {
         fb.textContent = '';
@@ -907,7 +939,8 @@
     }
 
     async function switchToFixture() {
-      await fetch('/tools/aws_config', {
+      setStoredSession({ mode: 'fixture', region: 'us-east-1' });
+      await apiFetch('/tools/aws_config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode: 'fixture', region: 'us-east-1' })
@@ -919,10 +952,11 @@
     }
 
     async function disconnectAwsKeys() {
+      sessionStorage.removeItem(SESSION_KEY);
       document.getElementById('awsAccessKey').value = '';
       document.getElementById('awsSecretKey').value = '';
       document.getElementById('awsSessionToken').value = '';
-      await fetch('/tools/aws_disconnect', { method: 'POST' });
+      await apiFetch('/tools/aws_disconnect', { method: 'POST' });
       closeAccountModal();
       await refreshStatus();
       await reloadAll();

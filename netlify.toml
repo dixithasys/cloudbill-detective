@@ -1,17 +1,3 @@
 [build]
   publish = "cloudbill_detective/static"
-  command = "echo 'Publishing CloudBill Detective Web UI'"
-
-# Optional: If you host the Python FastAPI + MCP container on Render/Railway,
-# uncomment the redirect below to proxy API calls to your live Python backend:
-# [[redirects]]
-#   from = "/tools/*"
-#   to = "https://your-cloudbill-detective-backend.onrender.com/tools/:splat"
-#   status = 200
-#   force = true
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
+  command = "echo 'Publishing CloudBill Detective Web UI & Netlify Functions'"
