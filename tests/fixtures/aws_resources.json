@@ -1,0 +1,184 @@
+{
+  "regions": {
+    "us-east-1": {
+      "volumes": [
+        {
+          "VolumeId": "vol-0a1b2c3d4e5f00001",
+          "State": "available",
+          "Size": 500,
+          "VolumeType": "gp3",
+          "Iops": 3000,
+          "CreateTime": "2026-10-14T16:22:10Z"
+        },
+        {
+          "VolumeId": "vol-0a1b2c3d4e5f00002",
+          "State": "available",
+          "Size": 100,
+          "VolumeType": "gp2",
+          "CreateTime": "2026-09-02T09:15:00Z"
+        },
+        {
+          "VolumeId": "vol-0a1b2c3d4e5f00099",
+          "State": "in-use",
+          "Size": 200,
+          "VolumeType": "gp3",
+          "Iops": 3000,
+          "Attachments": [
+            {
+              "InstanceId": "i-0f9e8d7c6b5a00099",
+              "State": "attached"
+            }
+          ]
+        }
+      ],
+      "addresses": [
+        {
+          "AllocationId": "eipalloc-0123456789abcdef1",
+          "PublicIp": "54.210.111.42",
+          "Domain": "vpc"
+        },
+        {
+          "AllocationId": "eipalloc-0123456789abcdef9",
+          "PublicIp": "54.210.111.99",
+          "AssociationId": "eipassoc-09999999abcdef",
+          "InstanceId": "i-0f9e8d7c6b5a00099",
+          "Domain": "vpc"
+        }
+      ],
+      "instances": [
+        {
+          "InstanceId": "i-0f9e8d7c6b5a00001",
+          "InstanceType": "m5.xlarge",
+          "State": { "Name": "running" },
+          "LaunchTime": "2026-10-18T19:40:12Z"
+        },
+        {
+          "InstanceId": "i-0f9e8d7c6b5a00002",
+          "InstanceType": "t3.large",
+          "State": { "Name": "running" },
+          "LaunchTime": "2026-10-25T14:10:05Z"
+        },
+        {
+          "InstanceId": "i-0f9e8d7c6b5a00099",
+          "InstanceType": "m5.large",
+          "State": { "Name": "running" },
+          "LaunchTime": "2026-08-01T10:00:00Z"
+        },
+        {
+          "InstanceId": "i-0f9e8d7c6b5a00098",
+          "InstanceType": "c5.xlarge",
+          "State": { "Name": "stopped" },
+          "LaunchTime": "2026-07-15T08:00:00Z"
+        }
+      ],
+      "cloudwatch_cpu_by_instance": {
+        "i-0f9e8d7c6b5a00001": [1.2, 1.5, 1.1, 1.8, 1.3, 1.6, 1.3],
+        "i-0f9e8d7c6b5a00002": [2.1, 2.5, 2.0, 2.4, 2.2, 2.6, 2.3],
+        "i-0f9e8d7c6b5a00099": [40.0, 45.0, 41.5, 44.0, 43.5, 41.0, 42.5],
+        "i-0f9e8d7c6b5a00098": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      },
+      "snapshots": [
+        {
+          "SnapshotId": "snap-0fedcba9876500001",
+          "State": "completed",
+          "VolumeSize": 400,
+          "StartTime": "2026-03-10T04:00:00Z"
+        },
+        {
+          "SnapshotId": "snap-0fedcba9876500002",
+          "State": "completed",
+          "VolumeSize": 240,
+          "StartTime": "2026-06-01T02:30:00Z"
+        },
+        {
+          "SnapshotId": "snap-0fedcba9876500099",
+          "State": "completed",
+          "VolumeSize": 100,
+          "StartTime": "2026-11-10T03:00:00Z"
+        }
+      ]
+    }
+  },
+  "cloudtrail_events": {
+    "vol-0a1b2c3d4e5f00001": [
+      {
+        "EventId": "evt-vol-0001",
+        "EventName": "CreateVolume",
+        "Username": "alice.dev",
+        "EventTime": "2026-10-14T16:22:10+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-vol-0001\",\"eventName\":\"CreateVolume\",\"userIdentity\":{\"userName\":\"alice.dev\"},\"sourceIPAddress\":\"198.51.100.14\",\"userAgent\":\"aws-cli/2.18.0\"}"
+      }
+    ],
+    "vol-0a1b2c3d4e5f00002": [
+      {
+        "EventId": "evt-vol-0002",
+        "EventName": "CreateVolume",
+        "Username": "ci-deploy-bot",
+        "EventTime": "2026-09-02T09:15:00+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-vol-0002\",\"eventName\":\"CreateVolume\",\"userIdentity\":{\"userName\":\"ci-deploy-bot\"},\"sourceIPAddress\":\"198.51.100.88\",\"userAgent\":\"Terraform/1.9.5\"}"
+      }
+    ],
+    "eipalloc-0123456789abcdef1": [
+      {
+        "EventId": "evt-eip-0001",
+        "EventName": "AllocateAddress",
+        "Username": "bob.ops",
+        "EventTime": "2026-10-20T11:05:44+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-eip-0001\",\"eventName\":\"AllocateAddress\",\"userIdentity\":{\"userName\":\"bob.ops\"},\"sourceIPAddress\":\"203.0.113.50\",\"userAgent\":\"console.ec2.amazonaws.com\"}"
+      }
+    ],
+    "i-0f9e8d7c6b5a00001": [
+      {
+        "EventId": "evt-ec2-0001-tag",
+        "EventName": "CreateTags",
+        "Username": "charlie.ml",
+        "EventTime": "2026-10-18T19:40:15+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-ec2-0001-tag\",\"eventName\":\"CreateTags\",\"userIdentity\":{\"userName\":\"charlie.ml\"}}"
+      },
+      {
+        "EventId": "evt-ec2-0001",
+        "EventName": "RunInstances",
+        "Username": "charlie.ml",
+        "EventTime": "2026-10-18T19:40:12+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-ec2-0001\",\"eventName\":\"RunInstances\",\"userIdentity\":{\"userName\":\"charlie.ml\"},\"sourceIPAddress\":\"192.0.2.77\",\"userAgent\":\"Boto3/1.35.0 Python/3.12\"}"
+      }
+    ],
+    "i-0f9e8d7c6b5a00002": [
+      {
+        "EventId": "evt-ec2-0002",
+        "EventName": "RunInstances",
+        "Username": "alice.dev",
+        "EventTime": "2026-10-25T14:10:05+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-ec2-0002\",\"eventName\":\"RunInstances\",\"userIdentity\":{\"userName\":\"alice.dev\"},\"sourceIPAddress\":\"198.51.100.14\",\"userAgent\":\"aws-cli/2.18.0\"}"
+      }
+    ],
+    "snap-0fedcba9876500001": [
+      {
+        "EventId": "evt-snap-0001",
+        "EventName": "CreateSnapshot",
+        "Username": "backup-lambda-role",
+        "EventTime": "2026-03-10T04:00:00+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-snap-0001\",\"eventName\":\"CreateSnapshot\",\"userIdentity\":{\"userName\":\"backup-lambda-role\"},\"sourceIPAddress\":\"lambda.amazonaws.com\",\"userAgent\":\"awslambda-worker\"}"
+      }
+    ],
+    "snap-0fedcba9876500002": [
+      {
+        "EventId": "evt-snap-0002",
+        "EventName": "CreateSnapshot",
+        "Username": "bob.ops",
+        "EventTime": "2026-06-01T02:30:00+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-snap-0002\",\"eventName\":\"CreateSnapshot\",\"userIdentity\":{\"userName\":\"bob.ops\"},\"sourceIPAddress\":\"203.0.113.50\",\"userAgent\":\"console.ec2.amazonaws.com\"}"
+      }
+    ],
+    "i-0f9e8d7c6b5a00099": [
+      {
+        "EventId": "evt-ec2-0099",
+        "EventName": "RunInstances",
+        "Username": "prod-autoscaler",
+        "EventTime": "2026-08-01T10:00:00+00:00",
+        "CloudTrailEvent": "{\"eventID\":\"evt-ec2-0099\",\"eventName\":\"RunInstances\",\"userIdentity\":{\"userName\":\"prod-autoscaler\"}}"
+      }
+    ]
+  }
+}
+

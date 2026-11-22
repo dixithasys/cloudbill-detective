@@ -1,0 +1,77 @@
+{
+  "region": "us-east-1",
+  "reference_now": "2026-11-21T00:00:00Z",
+  "planted_issues": [
+    {
+      "resource_id": "vol-0a1b2c3d4e5f00001",
+      "resource_type": "ebs_volume",
+      "category": "unattached_ebs_volume",
+      "expected_monthly_cost": 40.0,
+      "expected_user": "alice.dev",
+      "expected_event": "CreateVolume",
+      "expected_time": "2026-10-14T16:22:10+00:00"
+    },
+    {
+      "resource_id": "vol-0a1b2c3d4e5f00002",
+      "resource_type": "ebs_volume",
+      "category": "unattached_ebs_volume",
+      "expected_monthly_cost": 10.0,
+      "expected_user": "ci-deploy-bot",
+      "expected_event": "CreateVolume",
+      "expected_time": "2026-09-02T09:15:00+00:00"
+    },
+    {
+      "resource_id": "eipalloc-0123456789abcdef1",
+      "resource_type": "elastic_ip",
+      "category": "unassociated_elastic_ip",
+      "expected_monthly_cost": 3.65,
+      "expected_user": "bob.ops",
+      "expected_event": "AllocateAddress",
+      "expected_time": "2026-10-20T11:05:44+00:00"
+    },
+    {
+      "resource_id": "i-0f9e8d7c6b5a00001",
+      "resource_type": "ec2_instance",
+      "category": "low_cpu_ec2_instance",
+      "expected_monthly_cost": 140.16,
+      "expected_user": "charlie.ml",
+      "expected_event": "RunInstances",
+      "expected_time": "2026-10-18T19:40:12+00:00"
+    },
+    {
+      "resource_id": "i-0f9e8d7c6b5a00002",
+      "resource_type": "ec2_instance",
+      "category": "low_cpu_ec2_instance",
+      "expected_monthly_cost": 60.74,
+      "expected_user": "alice.dev",
+      "expected_event": "RunInstances",
+      "expected_time": "2026-10-25T14:10:05+00:00"
+    },
+    {
+      "resource_id": "snap-0fedcba9876500001",
+      "resource_type": "ebs_snapshot",
+      "category": "stale_snapshot_over_90d",
+      "expected_monthly_cost": 20.0,
+      "expected_user": "backup-lambda-role",
+      "expected_event": "CreateSnapshot",
+      "expected_time": "2026-03-10T04:00:00+00:00"
+    },
+    {
+      "resource_id": "snap-0fedcba9876500002",
+      "resource_type": "ebs_snapshot",
+      "category": "stale_snapshot_over_90d",
+      "expected_monthly_cost": 12.0,
+      "expected_user": "bob.ops",
+      "expected_event": "CreateSnapshot",
+      "expected_time": "2026-06-01T02:30:00+00:00"
+    }
+  ],
+  "healthy_resources": [
+    "vol-0a1b2c3d4e5f00099",
+    "eipalloc-0123456789abcdef9",
+    "i-0f9e8d7c6b5a00099",
+    "i-0f9e8d7c6b5a00098",
+    "snap-0fedcba9876500099"
+  ]
+}
+

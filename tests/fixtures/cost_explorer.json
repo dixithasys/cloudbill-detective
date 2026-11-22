@@ -1,0 +1,107 @@
+{
+  "by_dimension": {
+    "SERVICE": [
+      {
+        "TimePeriod": {
+          "Start": "2026-10-22",
+          "End": "2026-11-21"
+        },
+        "Groups": [
+          {
+            "Keys": ["Amazon Elastic Compute Cloud - Compute"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "412.40", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["Amazon Elastic Block Store"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "148.50", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["Amazon Virtual Private Cloud"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "29.20", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["Amazon Simple Storage Service"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "18.75", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["AWS CloudTrail"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "4.10", "Unit": "USD" }
+            }
+          }
+        ]
+      }
+    ],
+    "REGION": [
+      {
+        "TimePeriod": {
+          "Start": "2026-10-22",
+          "End": "2026-11-21"
+        },
+        "Groups": [
+          {
+            "Keys": ["us-east-1"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "565.80", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["us-west-2"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "47.15", "Unit": "USD" }
+            }
+          }
+        ]
+      }
+    ],
+    "USAGE_TYPE": [
+      {
+        "TimePeriod": {
+          "Start": "2026-10-22",
+          "End": "2026-11-21"
+        },
+        "Groups": [
+          {
+            "Keys": ["BoxUsage:m5.xlarge"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "140.16", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["EBS:VolumeUsage.gp3"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "86.50", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["BoxUsage:t3.large"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "60.74", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["EBS:SnapshotUsage"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "52.00", "Unit": "USD" }
+            }
+          },
+          {
+            "Keys": ["USE1-PublicIPv4:IdleAddress"],
+            "Metrics": {
+              "UnblendedCost": { "Amount": "3.65", "Unit": "USD" }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+

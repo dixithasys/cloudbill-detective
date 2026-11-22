@@ -1,0 +1,91 @@
+{
+  "region": "ap-southeast-2",
+  "mode": "live",
+  "ground_truth": {
+    "region": "ap-southeast-2",
+    "mode": "live",
+    "planted_issues": [],
+    "healthy_resources": []
+  },
+  "find_waste": {
+    "region": "ap-southeast-2",
+    "mode": "live",
+    "waste_count": 0,
+    "total_estimated_monthly_cost": 0,
+    "resources": []
+  },
+  "who_created": {},
+  "explain_change": {},
+  "cost_summary": {
+    "days": 30,
+    "group_by": "SERVICE",
+    "time_period": {
+      "start": "2026-10-23",
+      "end": "2026-11-23"
+    },
+    "source": "cache",
+    "cache_hit": true,
+    "api_call_cost_incurred_usd": 0.0,
+    "api_cost_saved_usd": 0.01,
+    "total_cost_usd": 23.49,
+    "credits_applied_usd": 23.49,
+    "net_after_credits_usd": 0.0,
+    "breakdown": [
+      {
+        "group": "Amazon OpenSearch Service",
+        "cost_usd": 18.79
+      },
+      {
+        "group": "Amazon Elastic Compute Cloud - Compute",
+        "cost_usd": 2.89
+      },
+      {
+        "group": "Amazon Virtual Private Cloud",
+        "cost_usd": 0.55
+      },
+      {
+        "group": "Amazon Polly",
+        "cost_usd": 0.53
+      },
+      {
+        "group": "EC2 - Other",
+        "cost_usd": 0.37
+      },
+      {
+        "group": "AWS Cost Explorer",
+        "cost_usd": 0.16
+      },
+      {
+        "group": "Amazon Bedrock",
+        "cost_usd": 0.16
+      },
+      {
+        "group": "Amazon Bedrock Managed Knowledge Base",
+        "cost_usd": 0.04
+      }
+    ],
+    "periods": [
+      {
+        "start": "2026-10-23",
+        "end": "2026-11-01",
+        "costs": {}
+      },
+      {
+        "start": "2026-11-01",
+        "end": "2026-11-23",
+        "costs": {
+          "AWS Cost Explorer": 0.16,
+          "Amazon Bedrock": 0.16,
+          "Amazon Bedrock Managed Knowledge Base": 0.04,
+          "EC2 - Other": 0.37,
+          "Amazon Elastic Compute Cloud - Compute": 2.89,
+          "Amazon OpenSearch Service": 18.79,
+          "Amazon Polly": 0.53,
+          "Amazon Simple Storage Service": 0.0,
+          "Amazon Virtual Private Cloud": 0.55,
+          "Cohere Embed 3 Model - English (Amazon Bedrock Edition)": 0.0
+        }
+      }
+    ]
+  }
+}

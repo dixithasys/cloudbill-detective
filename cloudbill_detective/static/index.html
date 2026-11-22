@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudBill Detective</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-2: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-sub: #64748b;
+      --accent: #0284c7;
+      --primary: #2563eb;
+      --success: #059669;
+      --danger: #e11d48;
+      --warning: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      background: var(--surface-2);
+      padding: 0.15rem 0.45rem;
+      border-radius: 5px;
+      color: #0369a1;
+      border: 1px solid var(--border);
+    }
+
+    /* Clean Top Navbar */
+    .navbar {
+      height: 62px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .nav-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 0.84rem;
+      font-weight: 500;
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .nav-tab:hover {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    .nav-tab.active {
+      color: var(--primary);
+      background: #eff6ff;
+      font-weight: 600;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.38rem 0.8rem;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .status-pill:hover {
+      border-color: var(--accent);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .dot.fixture { background: var(--accent); }
+    .dot.error { background: var(--danger); }
+
+    select, input[type="text"], input[type="password"] {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.42rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--primary);
+    }
+
+    /* Main Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.75rem 2rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* KPI Summary Row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .kpi-row { grid-template-columns: 1fr; }
+    }
+
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    .kpi-label {
+      font-size: 0.76rem;
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+
+    .kpi-val {
+      font-size: 1.65rem;
+      font-weight: 700;
+      margin: 0.25rem 0 0.15rem;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-meta {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.35rem 1.5rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Segmented Toggle */
+    .seg-group {
+      display: inline-flex;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2px;
+    }
+
+    .seg-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 0.76rem;
+      font-weight: 500;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    }
+
+    /* Buttons */
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.52rem 1rem;
+      border-radius: 8px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn:hover { opacity: 0.92; }
+
+    .btn-ghost {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.38rem 0.75rem;
+      border-radius: 7px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      background: var(--surface-2);
+    }
+
+    /* Ask Bar */
+    .ask-row {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .ask-row input {
+      flex: 1;
+      padding: 0.65rem 0.95rem;
+      font-size: 0.88rem;
+      background: var(--bg);
+    }
+
+    .prompt-pills {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      margin-top: 0.65rem;
+    }
+
+    .pill {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .pill:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    /* Progress Bars */
+    .bar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .bar-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.84rem;
+    }
+
+    .bar-track {
+      height: 7px;
+      background: var(--surface-2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 99px;
+    }
+
+    /* Split layout for Waste + Attribution */
+    .split-2 {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 960px) {
+      .split-2 { grid-template-columns: 1fr; }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.7rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+      background: #eff6ff;
+      color: var(--primary);
+      border: 1px solid #bfdbfe;
+    }
+
+    /* Attribution Detail List */
+    .kv-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: 0.9rem;
+    }
+
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kv-row span { color: var(--text-sub); }
+
+    /* Modal for AWS Connection */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 480px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .form-field label {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    .tab-pane { display: none; flex-direction: column; gap: 1.25rem; }
+    .tab-pane.active { display: flex; }
+
+    .notice {
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Clean Minimal Header (No Icon in Top Corner) -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <span>CloudBill Detective</span>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('overview', this)">Overview &amp; Spend</button>
+        <button class="nav-tab" onclick="switchTab('waste', this)">Waste &amp; Attribution</button>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <select id="regionSelect" onchange="onRegionChange()">
+        <option value="ap-southeast-2">ap-southeast-2 (Sydney)</option>
+        <option value="ap-southeast-1">ap-southeast-1 (Singapore)</option>
+        <option value="ap-south-1">ap-south-1 (Mumbai)</option>
+        <option value="us-east-1">us-east-1 (N. Virginia)</option>
+        <option value="us-west-2">us-west-2 (Oregon)</option>
+        <option value="eu-west-1">eu-west-1 (Ireland)</option>
+      </select>
+
+      <button class="status-pill" onclick="openAccountModal()">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Loading...</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+
+    <!-- 3 Clean KPI Cards -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">30-Day Gross Usage</div>
+        <div class="kpi-val" id="kpiSpend">$0.00</div>
+        <div class="kpi-meta" id="kpiSpendMeta">Cost Explorer</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Credits Applied</div>
+        <div class="kpi-val" style="color: var(--success);" id="kpiCredits">$0.00</div>
+        <div class="kpi-meta" id="kpiNetMeta">Net invoice: $0.00</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Detected Monthly Waste</div>
+        <div class="kpi-val" style="color: var(--danger);" id="kpiWaste">$0.00/mo</div>
+        <div class="kpi-meta" id="kpiWasteMeta">0 resources flagged</div>
+      </div>
+    </div>
+
+    <!-- TAB 1: Overview & Spend -->
+    <div id="tab-overview" class="tab-pane active">
+      <!-- Ask Detective Multi-Turn Chat Card -->
+      <div class="card">
+        <div class="card-head" style="margin-bottom: 0.75rem;">
+          <div class="card-title">Chat with CloudBill Detective</div>
+          <div style="display:flex;gap:0.45rem;align-items:center;">
+            <button class="btn-ghost" id="llmBadgeBtn" onclick="openAccountModal()">Free Cloud LLM ($0 AWS Cost)</button>
+            <button class="btn-ghost" onclick="clearChatHistory()" title="Clear conversation">Clear Chat</button>
+          </div>
+        </div>
+
+        <div id="chatThread" style="display:none;flex-direction:column;gap:0.75rem;max-height:380px;overflow-y:auto;margin-bottom:0.85rem;padding:0.85rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;"></div>
+
+        <form class="ask-row" onsubmit="onAskSubmit(event)">
+          <input id="askInput" type="text" placeholder="Ask a question or reply with a resource ID / follow-up..." />
+          <button type="submit" class="btn">Send</button>
+        </form>
+        <div class="prompt-pills">
+          <button class="pill" onclick="askQuestion('Why did my AWS bill grow?')">Why did my AWS bill grow?</button>
+          <button class="pill" onclick="askQuestion('Who created the Amazon OpenSearch Service resource and how much did it cost?')">Explain OpenSearch spend &amp; creator</button>
+          <button class="pill" onclick="askQuestion('Which regions and usage types drove my bill?')">Breakdown by region &amp; usage type</button>
+          <button class="pill" onclick="askQuestion('Find all waste')">Check for waste</button>
+        </div>
+      </div>
+
+      <!-- Cost Explorer Card -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Cost Explorer Breakdown</div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <div class="seg-group" id="groupToggle">
+              <button class="seg-btn active" onclick="setGroupBy('SERVICE', this)">Service</button>
+              <button class="seg-btn" onclick="setGroupBy('REGION', this)">Region</button>
+              <button class="seg-btn" onclick="setGroupBy('USAGE_TYPE', this)">Usage Type</button>
+            </div>
+            <select id="daysSelect" onchange="loadCost(false)">
+              <option value="30" selected>30 Days</option>
+              <option value="60">60 Days</option>
+              <option value="90">90 Days</option>
+              <option value="14">14 Days</option>
+            </select>
+            <button class="btn-ghost" onclick="loadCost(true)" title="Refresh from Cost Explorer">↻</button>
+          </div>
+        </div>
+
+        <div id="costList" class="bar-list"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Waste & CloudTrail Attribution -->
+    <div id="tab-waste" class="tab-pane">
+      <div id="scpNotice" class="notice" style="display: none;"></div>
+
+      <div class="split-2">
+        <!-- Left: Waste Table -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Idle &amp; Unattached Resources</div>
+            <div class="seg-group">
+              <button class="seg-btn active" onclick="setWasteFilter('all', this)">All</button>
+              <button class="seg-btn" onclick="setWasteFilter('ebs_volume', this)">EBS</button>
+              <button class="seg-btn" onclick="setWasteFilter('elastic_ip', this)">EIP</button>
+              <button class="seg-btn" onclick="setWasteFilter('ec2_instance', this)">EC2</button>
+              <button class="seg-btn" onclick="setWasteFilter('ebs_snapshot', this)">Snapshots</button>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Resource</th>
+                  <th>Type</th>
+                  <th>Reason</th>
+                  <th>Cost/Mo</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="wasteBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: CloudTrail Attribution Inspector -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">CloudTrail Attribution</div>
+          </div>
+          <div class="ask-row" style="margin-bottom: 0.9rem;">
+            <input id="inspectInput" type="text" placeholder="Resource ID (e.g. vol-..., i-...)" />
+            <button class="btn-ghost" onclick="inspectManual()">Lookup</button>
+          </div>
+
+          <div id="inspectQuote" style="font-size: 0.85rem; color: var(--text-sub); background: var(--bg); padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border);">
+            Select a resource from the table or enter a Resource ID to view its plain-English explanation and CloudTrail creator.
+          </div>
+
+          <div id="inspectDetails" class="kv-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Clean Modal for Switching Live AWS vs Demo Fixture -->
+  <div class="modal-backdrop" id="accountModal">
+    <div class="modal">
+      <div class="modal-head">
+        <strong style="font-size: 0.98rem;">Data Source &amp; AWS Account</strong>
+        <button class="btn-ghost" onclick="closeAccountModal()">✕</button>
+      </div>
+
+      <div class="seg-group" style="width: 100%;">
+        <button class="seg-btn active" style="flex:1;" id="modalTabLive">Live AWS Account</button>
+        <button class="seg-btn" style="flex:1;" id="modalTabFixture" onclick="switchToFixture()">Demo Fixture Data</button>
+      </div>
+
+      <div id="modalLivePane" class="form-stack">
+        <p style="font-size: 0.78rem; color: var(--text-sub);">
+          Enter read-only AWS keys (kept in memory only) or leave blank to use your local <code>~/.aws/credentials</code> profile.
+        </p>
+        <div class="form-field">
+          <label>AWS Access Key ID</label>
+          <input type="text" id="awsAccessKey" autocomplete="off" placeholder="AKIA... (optional if using local profile)" />
+        </div>
+        <div class="form-field">
+          <label>AWS Secret Access Key</label>
+          <input type="password" id="awsSecretKey" autocomplete="new-password" placeholder="Secret Access Key" />
+        </div>
+        <div class="form-field">
+          <label>AWS Session Token (Optional)</label>
+          <input type="password" id="awsSessionToken" autocomplete="new-password" placeholder="Only for temporary CloudShell / STS credentials" />
+        </div>
+        <div class="form-field">
+          <label>Local Profile Name (Optional)</label>
+          <input type="text" id="awsProfile" placeholder="default" />
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:0.35rem 0;" />
+
+        <div class="form-field">
+          <label>Cost-Free LLM Provider (Never charges your AWS account)</label>
+          <select id="llmProviderSelect">
+            <option value="free" selected>Free Cloud LLM (No API Key Needed • $0 Cost)</option>
+            <option value="gemini">Google Gemini 2.5 Flash (100% Free AI Studio Key)</option>
+            <option value="groq">Groq Llama 3.3 70B (100% Free Groq Key)</option>
+            <option value="ollama">Ollama Local (http://localhost:11434 — 100% Local)</option>
+            <option value="none">Built-in Deterministic Report (No LLM)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Free API Key (Optional — only if you choose Gemini or Groq above)</label>
+          <input type="password" id="llmApiKey" placeholder="Leave blank for Free Cloud LLM, or paste AIza... / gsk_..." />
+        </div>
+
+        <div id="modalFeedback" style="font-size: 0.78rem;"></div>
+        <div style="display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 0.25rem;">
+          <button class="btn-ghost" style="color:var(--danger);border-color:#fecdd3;" onclick="disconnectAwsKeys()">Clear Stored Keys</button>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="btn-ghost" onclick="closeAccountModal()">Cancel</button>
+            <button class="btn" onclick="saveLiveAws()">Connect Live AWS</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentGroupBy = 'SERVICE';
+    let currentWaste = [];
+    let wasteFilter = 'all';
+
+    // Built-in Demo Dataset for Static Netlify Portfolio Hosting (when Python backend is not attached)
+    const NETLIFY_DEMO_DATA = {
+      waste: {
+        region: "us-east-1",
+        mode: "fixture",
+        waste_count: 7,
+        total_estimated_monthly_cost: 286.55,
+        resources: [
+          { resource_id: "i-0f9e8d7c6b5a00001", resource_type: "ec2_instance", region: "us-east-1", reason: "Underutilized EC2 instance (m5.xlarge, 7-day avg CPU 1.4% < 5.0% threshold)", estimated_monthly_cost: 140.16, created_by: "charlie.ml", creating_event: "RunInstances", created_at: "2026-10-18T19:40:12+00:00", source_ip: "192.0.2.77" },
+          { resource_id: "i-0f9e8d7c6b5a00002", resource_type: "ec2_instance", region: "us-east-1", reason: "Underutilized EC2 instance (t3.large, 7-day avg CPU 2.3% < 5.0% threshold)", estimated_monthly_cost: 60.74, created_by: "alice.dev", creating_event: "RunInstances", created_at: "2026-10-25T14:10:05+00:00", source_ip: "198.51.100.14" },
+          { resource_id: "vol-0a1b2c3d4e5f00001", resource_type: "ebs_volume", region: "us-east-1", reason: "Unattached EBS volume (state=available, 500 GiB gp3)", estimated_monthly_cost: 40.00, created_by: "alice.dev", creating_event: "CreateVolume", created_at: "2026-10-14T16:22:10+00:00", source_ip: "198.51.100.14" },
+          { resource_id: "snap-0fedcba9876500001", resource_type: "ebs_snapshot", region: "us-east-1", reason: "Stale EBS snapshot older than 90 days (255 days old, 400 GiB)", estimated_monthly_cost: 20.00, created_by: "backup-lambda-role", creating_event: "CreateSnapshot", created_at: "2026-03-10T04:00:00+00:00", source_ip: "lambda.amazonaws.com" },
+          { resource_id: "snap-0fedcba9876500002", resource_type: "ebs_snapshot", region: "us-east-1", reason: "Stale EBS snapshot older than 90 days (173 days old, 240 GiB)", estimated_monthly_cost: 12.00, created_by: "bob.ops", creating_event: "CreateSnapshot", created_at: "2026-06-01T02:30:00+00:00", source_ip: "203.0.113.50" },
+          { resource_id: "vol-0a1b2c3d4e5f00002", resource_type: "ebs_volume", region: "us-east-1", reason: "Unattached EBS volume (state=available, 100 GiB gp2)", estimated_monthly_cost: 10.00, created_by: "ci-deploy-bot", creating_event: "CreateVolume", created_at: "2026-09-02T09:15:00+00:00", source_ip: "198.51.100.88" },
+          { resource_id: "eipalloc-0123456789abcdef1", resource_type: "elastic_ip", region: "us-east-1", reason: "Unassociated Elastic IP (54.210.111.42 not attached to any instance or ENI)", estimated_monthly_cost: 3.65, created_by: "bob.ops", creating_event: "AllocateAddress", created_at: "2026-10-20T11:05:44+00:00", source_ip: "203.0.113.50" }
+        ]
+      },
+      costs: {
+        SERVICE: [
+          { group: "Amazon Elastic Compute Cloud - Compute", cost_usd: 412.40 },
+          { group: "Amazon Elastic Block Store", cost_usd: 148.50 },
+          { group: "Amazon Virtual Private Cloud", cost_usd: 29.20 },
+          { group: "Amazon Simple Storage Service", cost_usd: 18.75 },
+          { group: "AWS CloudTrail", cost_usd: 4.10 }
+        ],
+        REGION: [
+          { group: "us-east-1", cost_usd: 565.80 },
+          { group: "us-west-2", cost_usd: 47.15 }
+        ],
+        USAGE_TYPE: [
+          { group: "BoxUsage:m5.xlarge", cost_usd: 140.16 },
+          { group: "EBS:VolumeUsage.gp3", cost_usd: 86.50 },
+          { group: "BoxUsage:t3.large", cost_usd: 60.74 },
+          { group: "EBS:SnapshotUsage", cost_usd: 52.00 },
+          { group: "USE1-PublicIPv4:IdleAddress", cost_usd: 3.65 }
+        ]
+      }
+    };
+
+    async function apiFetch(url, options = {}) {
+      try {
+        const res = await fetch(url, options);
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
+          return await res.json();
+        }
+      } catch (e) {
+        // Fallback to static Netlify demo data below
+      }
+      return handleStaticDemoFallback(url, options);
+    }
+
+    async function handleStaticDemoFallback(url, options = {}) {
+      if (url.startsWith('/tools/aws_status')) {
+        return { mode: 'fixture', connected: false, region: 'us-east-1', llm: { provider: 'free' } };
+      }
+      if (url.startsWith('/tools/cost_summary')) {
+        const params = new URLSearchParams(url.split('?')[1] || '');
+        const grp = (params.get('group_by') || 'SERVICE').toUpperCase();
+        const items = NETLIFY_DEMO_DATA.costs[grp] || NETLIFY_DEMO_DATA.costs.SERVICE;
+        return {
+          total_cost_usd: 612.95,
+          credits_applied_usd: 0,
+          net_after_credits_usd: 612.95,
+          source: 'netlify_live_demo',
+          breakdown: items
+        };
+      }
+      if (url.startsWith('/tools/find_waste')) {
+        return NETLIFY_DEMO_DATA.waste;
+      }
+      if (url.startsWith('/tools/explain_change')) {
+        const params = new URLSearchParams(url.split('?')[1] || '');
+        const rid = params.get('resource_id') || '';
+        const found = NETLIFY_DEMO_DATA.waste.resources.find(r => r.resource_id === rid) || NETLIFY_DEMO_DATA.waste.resources[0];
+        return {
+          resource_id: found.resource_id,
+          is_waste: true,
+          estimated_monthly_cost: found.estimated_monthly_cost,
+          created_by: found.created_by,
+          creating_event: found.creating_event,
+          created_at: found.created_at,
+          attribution: { source_ip: found.source_ip },
+          explanation: `Resource ${found.resource_id} adds an estimated $${found.estimated_monthly_cost.toFixed(2)}/month to your AWS bill because it is flagged as waste: ${found.reason}. According to CloudTrail, it was created by '${found.created_by}' via ${found.creating_event} on ${found.created_at}.`
+        };
+      }
+      if (url.startsWith('/tools/ask')) {
+        const body = options.body ? JSON.parse(options.body) : {};
+        const q = body.query || 'Why did my AWS bill grow?';
+        try {
+          const llmRes = await fetch('https://text.pollinations.ai/openai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'openai',
+              messages: [
+                { role: 'system', content: 'You are CloudBill Detective, a read-only AWS FinOps MCP assistant. Answer concisely using the provided MCP tool JSON.' },
+                { role: 'user', content: `Question: ${q}\n\nMCP Tool Results:\n${JSON.stringify(NETLIFY_DEMO_DATA)}` }
+              ]
+            })
+          });
+          const llmJson = await llmRes.json();
+          return {
+            answer: llmJson.choices[0].message.content,
+            report: {
+              title: 'Free Cloud LLM ($0 Cost • Interactive Demo)',
+              tools_used: ["cost_summary(30, 'SERVICE')", "find_waste('us-east-1')", "explain_change(...)"]
+            }
+          };
+        } catch (err) {
+          return {
+            answer: 'Over the last 30 days, total AWS spend is $612.95 (led by EC2 Compute at $412.40 and EBS at $148.50). We detected 7 wasted resources in us-east-1 totaling $286.55/month, led by idle m5.xlarge instance i-0f9e8d7c6b5a00001 ($140.16/mo, created by charlie.ml) and t3.large instance i-0f9e8d7c6b5a00002 ($60.74/mo, created by alice.dev).',
+            report: { title: 'CloudBill Detective Demo', tools_used: ["cost_summary(30, 'SERVICE')", "find_waste('us-east-1')"] }
+          };
+        }
+      }
+      return { ok: true };
+    }
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function openAccountModal() {
+      document.getElementById('accountModal').style.display = 'flex';
+    }
+
+    function closeAccountModal() {
+      document.getElementById('accountModal').style.display = 'none';
+    }
+
+    async function refreshStatus() {
+      const st = await apiFetch('/tools/aws_status');
+      const dot = document.getElementById('statusDot');
+      const txt = document.getElementById('statusText');
+
+      if (st.mode === 'live' && st.connected) {
+        dot.className = 'dot';
+        txt.textContent = `AWS ${st.account_id}`;
+      } else if (st.mode === 'live') {
+        dot.className = 'dot error';
+        txt.textContent = `AWS Auth Needed`;
+      } else {
+        dot.className = 'dot fixture';
+        txt.textContent = `Demo Data`;
+      }
+
+      if (st.llm) {
+        const p = st.llm.provider || 'free';
+        const btn = document.getElementById('llmBadgeBtn');
+        if (btn) {
+          btn.textContent = p === 'free'
+            ? 'LLM: Free Cloud LLM ($0 AWS Cost)'
+            : p === 'none'
+              ? 'Engine: Deterministic MCP Report'
+              : `LLM Active: ${p.toUpperCase()} ($0 AWS Cost)`;
+        }
+      }
+      return st;
+    }
+
+    async function saveLiveAws() {
+      const fb = document.getElementById('modalFeedback');
+      fb.style.color = 'var(--accent)';
+      fb.textContent = 'Saving settings...';
+      const region = document.getElementById('regionSelect').value;
+
+      await fetch('/tools/llm_config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: document.getElementById('llmProviderSelect').value,
+          api_key: document.getElementById('llmApiKey').value,
+        })
+      });
+
+      const res = await fetch('/tools/aws_config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'live',
+          aws_access_key_id: document.getElementById('awsAccessKey').value,
+          aws_secret_access_key: document.getElementById('awsSecretKey').value,
+          aws_session_token: document.getElementById('awsSessionToken').value,
+          aws_profile: document.getElementById('awsProfile').value,
+          region
+        })
+      });
+      const st = await res.json();
+      await refreshStatus();
+      if (st.connected) {
+        fb.textContent = '';
+        closeAccountModal();
+        await reloadAll();
+      } else {
+        fb.style.color = 'var(--danger)';
+        fb.textContent = st.message || 'Connection failed';
+      }
+    }
+
+    async function switchToFixture() {
+      await fetch('/tools/aws_config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'fixture', region: 'us-east-1' })
+      });
+      document.getElementById('regionSelect').value = 'us-east-1';
+      closeAccountModal();
+      await refreshStatus();
+      await reloadAll();
+    }
+
+    async function disconnectAwsKeys() {
+      document.getElementById('awsAccessKey').value = '';
+      document.getElementById('awsSecretKey').value = '';
+      document.getElementById('awsSessionToken').value = '';
+      await fetch('/tools/aws_disconnect', { method: 'POST' });
+      closeAccountModal();
+      await refreshStatus();
+      await reloadAll();
+    }
+
+    async function onRegionChange() {
+      await loadWaste();
+    }
+
+    function setGroupBy(group, btn) {
+      currentGroupBy = group;
+      document.querySelectorAll('#groupToggle .seg-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      loadCost(false);
+    }
+
+    async function loadCost(refresh = false) {
+      const days = document.getElementById('daysSelect').value;
+      const data = await apiFetch(`/tools/cost_summary?days=${days}&group_by=${currentGroupBy}&refresh=${refresh}`);
+
+      const gross = data.total_cost_usd || 0;
+      const credits = data.credits_applied_usd || 0;
+      const net = data.net_after_credits_usd !== undefined ? data.net_after_credits_usd : gross;
+
+      document.getElementById('kpiSpend').textContent = `$${gross.toFixed(2)}`;
+      document.getElementById('kpiSpendMeta').textContent = `${days}-day gross (${data.source})`;
+      document.getElementById('kpiCredits').textContent = credits > 0 ? `-$${credits.toFixed(2)}` : `$0.00`;
+      document.getElementById('kpiNetMeta').textContent = `Net bill after credits: $${net.toFixed(2)}`;
+
+      const list = document.getElementById('costList');
+      if (data.error) {
+        list.innerHTML = `<div style="color:var(--danger);font-size:0.83rem;">${data.error}</div>`;
+        return;
+      }
+      if (!data.breakdown || !data.breakdown.length) {
+        list.innerHTML = `<div style="color:var(--text-sub);font-size:0.84rem;padding:1rem 0;">No billable spend recorded in this period ($0.00).</div>`;
+        return;
+      }
+
+      const max = Math.max(...data.breakdown.map(b => b.cost_usd), 0.01);
+      list.innerHTML = data.breakdown.map(item => {
+        const width = Math.max(3, Math.round((item.cost_usd / max) * 100));
+        const pct = gross > 0 ? ((item.cost_usd / gross) * 100).toFixed(1) : '0.0';
+        return `
+          <div class="bar-row">
+            <div class="bar-top">
+              <span>${item.group}</span>
+              <span><strong>$${item.cost_usd.toFixed(2)}</strong> <span style="color:var(--text-sub);font-size:0.76rem;">(${pct}%)</span></span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${width}%;"></div></div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setWasteFilter(f, btn) {
+      wasteFilter = f;
+      btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderWaste();
+    }
+
+    function renderWaste() {
+      const tbody = document.getElementById('wasteBody');
+      const items = wasteFilter === 'all' ? currentWaste : currentWaste.filter(x => x.resource_type === wasteFilter);
+
+      if (!items.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-sub);padding:1.5rem;">No wasted resources detected ($0.00/mo).</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map(item => `
+        <tr>
+          <td><code>${item.resource_id}</code></td>
+          <td><span class="tag">${item.resource_type}</span></td>
+          <td>${item.reason}</td>
+          <td style="font-weight:600;color:var(--danger);">$${item.estimated_monthly_cost.toFixed(2)}</td>
+          <td><button class="btn-ghost" onclick="inspectResource('${item.resource_id}')">Explain</button></td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadWaste() {
+      const region = document.getElementById('regionSelect').value;
+      const data = await apiFetch(`/tools/find_waste?region=${encodeURIComponent(region)}`);
+      currentWaste = data.resources || [];
+
+      document.getElementById('kpiWaste').textContent = `$${data.total_estimated_monthly_cost.toFixed(2)}/mo`;
+      document.getElementById('kpiWasteMeta').textContent = `${data.waste_count} resources in ${data.region}`;
+
+      const notice = document.getElementById('scpNotice');
+      if (data.warnings && data.warnings.length) {
+        notice.style.display = 'flex';
+        notice.innerHTML = `
+          <span>EC2 scan in <code>${region}</code> is restricted by your AWS Free Plan Trial policy (<code>p-qpk8qq2f</code>).</span>
+          <button class="btn-ghost" onclick="switchToFixture()">Preview with Demo Data</button>
+        `;
+      } else {
+        notice.style.display = 'none';
+      }
+
+      renderWaste();
+      if (currentWaste.length > 0) {
+        inspectResource(currentWaste[0].resource_id);
+      }
+    }
+
+    async function inspectResource(rid) {
+      document.getElementById('inspectInput').value = rid;
+      const region = document.getElementById('regionSelect').value;
+      const data = await apiFetch(`/tools/explain_change?resource_id=${encodeURIComponent(rid)}&region=${encodeURIComponent(region)}`);
+      const attr = data.attribution || {};
+
+      document.getElementById('inspectQuote').textContent = data.explanation;
+      document.getElementById('inspectDetails').innerHTML = `
+        <div class="kv-row"><span>Resource ID</span><code>${data.resource_id}</code></div>
+        <div class="kv-row"><span>Monthly Waste Impact</span><strong>$${data.estimated_monthly_cost.toFixed(2)}/mo</strong></div>
+        <div class="kv-row"><span>Created By</span><strong>${data.created_by || 'N/A'}</strong></div>
+        <div class="kv-row"><span>CloudTrail Event</span><code>${data.creating_event || 'N/A'}</code></div>
+        <div class="kv-row"><span>Created Time</span><span>${data.created_at || 'N/A'}</span></div>
+        <div class="kv-row"><span>Source IP</span><span>${attr.source_ip || 'N/A'}</span></div>
+      `;
+    }
+
+    function inspectManual() {
+      const rid = document.getElementById('inspectInput').value.trim();
+      if (rid) inspectResource(rid);
+    }
+
+    let chatHistory = [];
+
+    function clearChatHistory() {
+      chatHistory = [];
+      const thread = document.getElementById('chatThread');
+      thread.innerHTML = '';
+      thread.style.display = 'none';
+    }
+
+    function formatInlineMd(str) {
+      return str
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/(^|\s)\*([^*\n]+)\*/g, '$1<em>$2</em>')
+        .replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    }
+
+    function formatChatText(raw) {
+      if (!raw) return '';
+      let cleaned = raw
+        .replace(/<thinking>[\s\S]*?<\/thinking>\s*/gi, '')
+        .replace(/<thought>[\s\S]*?<\/thought>\s*/gi, '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .trim();
+
+      const lines = cleaned.split(/\r?\n/);
+      let out = [];
+      let inTable = false;
+      let tableHeaderDone = false;
+      let inList = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        if (line.startsWith('|') && line.endsWith('|') && line.length > 2) {
+          if (inList) { out.push('</ul>'); inList = false; }
+          if (/^\|[\s\-:|]+\|$/.test(line)) {
+            continue;
+          }
+          const cells = line
+            .slice(1, -1)
+            .split('|')
+            .map(c => formatInlineMd(c.trim()));
+
+          if (!inTable) {
+            out.push('<table style="margin:0.55rem 0;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;">');
+            inTable = true;
+            tableHeaderDone = false;
+          }
+
+          if (!tableHeaderDone) {
+            out.push('<thead><tr>' + cells.map(c => `<th style="background:var(--surface-2);padding:0.55rem 0.75rem;">${c}</th>`).join('') + '</tr></thead><tbody>');
+            tableHeaderDone = true;
+          } else {
+            out.push('<tr>' + cells.map(c => `<td style="padding:0.55rem 0.75rem;">${c}</td>`).join('') + '</tr>');
+          }
+          continue;
+        }
+
+        if (inTable) {
+          out.push('</tbody></table>');
+          inTable = false;
+          tableHeaderDone = false;
+        }
+
+        if (/^[-*•]\s+/.test(line)) {
+          if (!inList) {
+            out.push('<ul style="margin:0.4rem 0 0.4rem 1.2rem;display:flex;flex-direction:column;gap:0.25rem;">');
+            inList = true;
+          }
+          out.push(`<li>${formatInlineMd(line.replace(/^[-*•]\s+/, ''))}</li>`);
+          continue;
+        }
+
+        if (inList) {
+          out.push('</ul>');
+          inList = false;
+        }
+
+        if (!line) {
+          out.push('<div style="height:0.45rem;"></div>');
+          continue;
+        }
+
+        if (/^#{1,4}\s+/.test(line)) {
+          const hText = formatInlineMd(line.replace(/^#{1,4}\s+/, ''));
+          out.push(`<div style="font-weight:700;color:var(--primary);margin:0.5rem 0 0.25rem;">${hText}</div>`);
+          continue;
+        }
+
+        out.push(`<div style="margin:0.15rem 0;">${formatInlineMd(line)}</div>`);
+      }
+
+      if (inTable) out.push('</tbody></table>');
+      if (inList) out.push('</ul>');
+      return out.join('');
+    }
+
+    function appendChatBubble(role, text, metaTitle = '', toolsUsed = []) {
+      const thread = document.getElementById('chatThread');
+      thread.style.display = 'flex';
+      const isUser = role === 'user';
+      const toolsBadges = (toolsUsed || []).map(t => `<code>${t}</code>`).join(' ');
+      const headerHtml = metaTitle
+        ? `<div style="font-size:0.74rem;color:var(--primary);font-weight:600;margin-bottom:0.4rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.4rem;"><span>${metaTitle.replace(/^🤖\s*/, '').replace(/^🕵️\s*/, '')}</span><span>${toolsBadges}</span></div>`
+        : '';
+
+      const bubble = document.createElement('div');
+      bubble.style.cssText = isUser
+        ? 'align-self:flex-end;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;padding:0.6rem 0.9rem;border-radius:10px;max-width:82%;font-size:0.85rem;'
+        : 'align-self:flex-start;background:var(--surface);border:1px solid var(--border);padding:0.85rem 1.05rem;border-radius:10px;max-width:96%;width:100%;font-size:0.85rem;line-height:1.55;';
+      bubble.innerHTML = `${headerHtml}<div>${formatChatText(text)}</div>`;
+      thread.appendChild(bubble);
+      thread.scrollTop = thread.scrollHeight;
+      return bubble;
+    }
+
+    async function onAskSubmit(e) {
+      e.preventDefault();
+      const inputEl = document.getElementById('askInput');
+      const q = inputEl.value.trim();
+      if (q) {
+        inputEl.value = '';
+        await askQuestion(q);
+      }
+    }
+
+    async function askQuestion(query) {
+      const region = document.getElementById('regionSelect').value;
+      appendChatBubble('user', query);
+      const pendingBubble = appendChatBubble('assistant', 'Thinking & calling MCP tools...', 'CloudBill Detective');
+
+      const data = await apiFetch('/tools/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, region, history: chatHistory })
+      });
+      const r = data.report || {};
+
+      chatHistory.push({ role: 'user', content: query });
+      chatHistory.push({ role: 'assistant', content: data.answer || '' });
+
+      const title = (r.title || 'CloudBill Detective').replace(/^🤖\s*/, '').replace(/^🕵️\s*/, '');
+      const tools = r.tools_used || [];
+      const toolsBadges = tools.map(t => `<code>${t}</code>`).join(' ');
+      const llmWarn = r.llm_note ? `<div style="font-size:0.73rem;color:var(--warning);margin-bottom:0.35rem;">${r.llm_note}</div>` : '';
+
+      pendingBubble.innerHTML = `
+        <div style="font-size:0.74rem;color:var(--primary);font-weight:600;margin-bottom:0.35rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.4rem;">
+          <span>${title}</span>
+          <span>${toolsBadges}</span>
+        </div>
+        ${llmWarn}
+        <div>${formatChatText(data.answer || '')}</div>
+      `;
+      const thread = document.getElementById('chatThread');
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    async function reloadAll() {
+      await Promise.all([loadCost(false), loadWaste()]);
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await refreshStatus();
+      await reloadAll();
+    });
+  </script>
+</body>
+</html>
