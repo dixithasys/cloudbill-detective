@@ -1,3 +1,4 @@
 [build]
   publish = "cloudbill_detective/static"
+  functions = "netlify/functions"
   command = "echo 'Publishing CloudBill Detective Web UI & Netlify Functions'"
