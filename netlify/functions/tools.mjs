@@ -121,22 +121,20 @@ async function awsSignedPost({ service, region, host, contentType, amzTarget, bo
 }
 
 function getCredsFromReq(req, bodyObj = {}) {
+  // ONLY read credentials explicitly sent by the current browser tab (never read Netlify's internal Lambda AWS_* env vars!)
   const accessKeyId = (
     bodyObj.aws_access_key_id ||
     req.headers.get("x-aws-access-key-id") ||
-    (typeof Netlify !== "undefined" && Netlify.env.get("AWS_ACCESS_KEY_ID")) ||
     ""
   ).trim().replace(/^["']|["']$/g, "");
   const secretAccessKey = (
     bodyObj.aws_secret_access_key ||
     req.headers.get("x-aws-secret-access-key") ||
-    (typeof Netlify !== "undefined" && Netlify.env.get("AWS_SECRET_ACCESS_KEY")) ||
     ""
   ).trim().replace(/^["']|["']$/g, "");
   let sessionToken = (
     bodyObj.aws_session_token ||
     req.headers.get("x-aws-session-token") ||
-    (typeof Netlify !== "undefined" && Netlify.env.get("AWS_SESSION_TOKEN")) ||
     ""
   ).trim().replace(/^["']|["']$/g, "");
 
